@@ -57,17 +57,23 @@ def register_user(filename, **kwargs):
     return id
 
 
-user_registered = register_user(filename, **{'nome': 'jose', 'email': "jose@hotmail.com", "password": '1234'})
-print(user_registered)
+# user_registered = register_user(filename, **{'nome': 'jose', 'email': "jose@hotmail.com", "password": '1234'})
 
 
 def login_required(func):
-    def wrapper(email, password):
-        pass
+    def wrapper(*args, **password):
+        print("OI")
 
 
+@login_required
 def login_user(email, password):
-    pass
+    with open(filename, 'r') as f:
+        reader = csv.DictReader(f)
+        for line in reader:
+            if line['email'] == email and line['password'] == password:
+                return "Usuário autenticado corretamente!"
+            else:
+                return "brht"
 
 
 user = login_user('jose@hotmail.com', '1234')
