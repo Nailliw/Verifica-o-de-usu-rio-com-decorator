@@ -1,6 +1,8 @@
 import csv
 import os
 
+filename = 'users.csv'
+
 
 def create_file(filename):
 
@@ -9,9 +11,6 @@ def create_file(filename):
         writer = csv.DictWriter(f, fieldnames=collums)
         if not os.stat(filename).st_size:
             writer.writeheader()
-
-
-filename = 'users.csv'
 
 
 def proximo_id(filename):
@@ -39,42 +38,31 @@ def all_users(filename):
         return (characters, id[-1])
 
 
-todos = all_users(filename)
-
-
 def register_user(filename, **kwargs):
     with open(filename, 'a') as f:
-        id = {'id': proximo_id(filename)}
-        id.update(kwargs)
+        user = {'id': proximo_id(filename)}
+        user.update(kwargs)
 
         collumns = ['id', 'nome', 'email', 'password']
         writer = csv.DictWriter(f, fieldnames=collumns)
         if not os.stat(filename).st_size:
             writer.writeheader()
 
-        writer.writerow(id)
+        writer.writerow(user)
 
-    return id
-
-
-# user_registered = register_user(filename, **{'nome': 'jose', 'email': "jose@hotmail.com", "password": '1234'})
+    return [user]
 
 
 def login_required(func):
-    def wrapper(*args, **password):
-        print("OI")
+    def wrapper(*args):
+        all = all_users(filename)
+        for line in all[0]:
+            if line['email'] == args[0] and line['password'] == args[1]:
+                return func(*args)
+        return "Usuário ou senha não autenticado corretamente"
+    return wrapper
 
 
 @login_required
 def login_user(email, password):
-    with open(filename, 'r') as f:
-        reader = csv.DictReader(f)
-        for line in reader:
-            if line['email'] == email and line['password'] == password:
-                return "Usuário autenticado corretamente!"
-            else:
-                return "brht"
-
-
-user = login_user('jose@hotmail.com', '1234')
-print(user)
+    return "Usuário autenticado corretamente!"
